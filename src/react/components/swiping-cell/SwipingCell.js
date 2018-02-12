@@ -39,7 +39,6 @@ class SwipingCell extends PureComponent {
     prevThreshold: 0,
     isLeftActive: false,
     isRightActive: false,
-    // inactiveOpacity: new Animated.Value(0.2),
     inactiveOpacity: 0.2,
     prevDX: 0,
     cancelLeftSwiping: false,
