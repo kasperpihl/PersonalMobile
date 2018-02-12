@@ -1,80 +1,134 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
 
 import React, { Component } from 'react';
 import {
-  Platform,
-  StyleSheet,
   Text,
   PanResponder,
   View
 } from 'react-native';
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' +
-    'Cmd+D or shake for dev menu',
-  android: 'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
+import moment from 'moment'
+
+import distanceBetweenPoints from './distanceBetweenPoints';
+import angleBetweenPoints from './angleBetweenPoints';
+import pointFromAngleDistance from './pointFromAngleDistance';
+
+const kWheelRadius = 150;
+const kConfirmRadius = 80;
+const kDotSize = 60;
+
+const kEnableConfirmRadius = 60;
+const kClearRadius = 45;
 
 export default class App extends Component<{}> {
   constructor(props) {
     super(props);
     this.state = {};
+    this.onLayout = this.onLayout.bind(this);
     this._panResponder = PanResponder.create({
-      // Ask to be the responder:
       onStartShouldSetPanResponder: (evt, gestureState) => true,
-      onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
-      onMoveShouldSetPanResponder: (evt, gestureState) => true,
-      onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
-
       onPanResponderGrant: (evt, gestureState) => {
-        // The gesture has started. Show visual feedback so the user knows
-        // what is happening!
-
-        // gestureState.d{x,y} will be set to zero now
+        this._dAngle = 0;
+        this.setState({ isSwiping: true });
+        this.updateState(evt.nativeEvent.pageX, evt.nativeEvent.pageY);
       },
       onPanResponderMove: (evt, gestureState) => {
-        console.log('hi', gestureState.vx);
-        // The most recent move distance is gestureState.move{X,Y}
+        const { centerX, centerY } = this.state;
+        const x = evt.nativeEvent.pageX;
+        const y = evt.nativeEvent.pageY;
 
-        // The accumulated gesture distance since becoming responder is
-        // gestureState.d{x,y}
+        const { isOutOfScope } = this.updateState(x, y);
+
+        if(!isOutOfScope) {
+          if(typeof this._lastX !== 'undefined') {
+            const angle = angleBetweenPoints(centerX, centerY, this._lastX, this._lastY, x, y);
+            this._dAngle = this._dAngle + angle;
+            const angleInterval = 50 * Math.PI / 180;
+          }
+          this._lastX = x;
+          this._lastY = y;
+        } else {
+          this._lastX = undefined;
+          this._lastY = undefined;
+          this._dAngle = 0;
+        }
+        
       },
-      onPanResponderTerminationRequest: (evt, gestureState) => true,
+
       onPanResponderRelease: (evt, gestureState) => {
-        // The user has released all touches while this view is the
-        // responder. This typically means a gesture has succeeded
-      },
-      onPanResponderTerminate: (evt, gestureState) => {
-        // Another component has become the responder, so this gesture
-        // should be cancelled
-      },
-      onShouldBlockNativeResponder: (evt, gestureState) => {
-        // Returns whether this component should block native components from becoming the JS
-        // responder. Returns true by default. Is currently only supported on android.
-        return true;
+        this.setState({ isSwiping: false });
       },
     });
   }
+  updateState(x, y) {
+    const {
+      isInConfirmButton,
+      isOutOfScope,
+      dotAngle,
+      centerX,
+      centerY,
+    } = this.state;
+
+    let returnObj = { isInConfirmButton, isOutOfScope, dotAngle };
+
+    const distance = distanceBetweenPoints(centerX, centerY, x, y);
+
+    const newDotAngle = Math.atan2(centerY - y, centerX - x) + Math.PI;
+    const newConfirm = (distance < kEnableConfirmRadius);
+    const newScope = (distance < kClearRadius);
+
+    if(dotAngle !== newDotAngle || newScope !== isOutOfScope || newConfirm !== isInConfirmButton) {
+      returnObj = { 
+        dotAngle: newDotAngle,
+        isInConfirmButton: newConfirm,
+        isOutOfScope: newScope,
+      };
+      this.setState(returnObj);
+    }
+
+    return returnObj;
+  }
+  onLayout(e1, e2) {
+    if(!this.didMeasure) {
+      this.wheelComp.measure((...args) => this.setState({
+        centerX: args[4] + args[2]/2,
+        centerY: args[5] + args[3]/2,
+      }));
+      this.didMeasure = true;
+    }
+  }
   render() {
+    const {
+      dotAngle,
+      isInConfirmButton,
+      isOutOfScope,
+      isSwiping,
+    } = this.state;
+    
+    const dotCenterDistance = kConfirmRadius + (kWheelRadius - kConfirmRadius)/ 2;
+    
+    const { x, y } = pointFromAngleDistance(kWheelRadius, kWheelRadius, dotAngle, dotCenterDistance);
+
+    const dotStyles = {
+      top: y - 30,
+      left: x - 30,
+      opacity: isSwiping && !isOutOfScope ? 1 : 0,
+    };
+
+    const confirmStyles = {
+      backgroundColor: isInConfirmButton ? 'green' : 'white'
+    };
+
     return (
-      <View 
+      <View
         style={styles.container}
         {...this._panResponder.panHandlers}
+        onLayout={this.onLayout}
+        
       >
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit App.js
-        </Text>
-        <Text style={styles.instructions}>
-          {instructions}
-        </Text>
+        <View style={styles.circle} ref={(view) => { this.wheelComp = view; }}>
+          <View style={[confirmStyles, styles.confirmCircle]}></View>
+          <View style={[dotStyles, styles.dot]}></View>
+        </View>
       </View>
     );
   }
@@ -83,18 +137,30 @@ export default class App extends Component<{}> {
 const styles = {
   container: {
     flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center'
+  },
+  dot: {
+    position: 'absolute',
+    width: kDotSize,
+    height: kDotSize,
+    borderRadius: kDotSize / 2,
+    backgroundColor: 'green',
+    
+  },
+  confirmCircle: {
+    width: kConfirmRadius * 2,
+    height: kConfirmRadius * 2,
+    borderRadius: kConfirmRadius,
+  },
+
+  circle: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
+    height: kWheelRadius * 2,
+    width: kWheelRadius * 2,
+    marginBottom: 50,
+    borderRadius: kWheelRadius,
+    backgroundColor: 'red'
+  }
 };
