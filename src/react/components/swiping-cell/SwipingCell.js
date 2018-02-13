@@ -32,6 +32,8 @@ class SwipingCell extends PureComponent {
       easing: Easing.bezier(0.175, 0.885, 0.32, 1.275),
       useNativeDriver: true,
     },
+    rightColor: 'red',
+    leftColor: 'green',
   }
 
   _resetState = {
@@ -144,22 +146,19 @@ class SwipingCell extends PureComponent {
       inactiveOpacity,
       cancelLeftSwiping,
     } = this.state;
+    const {
+      leftColor,
+    } = this.props;
     let {
       isLeftActive
     } = this.state;
-    let {
-      leftColor,
-    } = this.props;
 
     if (!didLayout) {
       return null;
     }
 
     const opacity = isLeftActive && cancelLeftSwiping ? 1 : inactiveOpacity;
-
-    leftColor = isLeftActive ? currentPoint.color || leftColor : leftColor;
-
-    const backgroundColor = leftColor ? leftColor : 'green';
+    const backgroundColor = isLeftActive ? currentPoint.color || leftColor : leftColor;
 
     return (
       <Animated.View style={[{transform, marginLeft: -width, width, backgroundColor, opacity}, styles.sideItem]}>
@@ -176,7 +175,7 @@ class SwipingCell extends PureComponent {
       inactiveOpacity,
       cancelRightSwiping,
     } = this.state;
-    let {
+    const {
       rightColor,
     } = this.props;
 
@@ -185,9 +184,7 @@ class SwipingCell extends PureComponent {
     }
 
     const opacity = isRightActive && cancelRightSwiping ? 1 : inactiveOpacity;
-    rightColor = isRightActive ? currentPoint.color || rightColor : rightColor;
-
-    const backgroundColor = rightColor || 'red';
+    const backgroundColor = isRightActive ? currentPoint.color || rightColor : rightColor;
 
     return (
       <Animated.View style={[{transform, marginRight: -width, width, backgroundColor, opacity}, styles.sideItem]}>
