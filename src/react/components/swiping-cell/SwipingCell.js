@@ -26,10 +26,14 @@ class SwipingCell extends PureComponent {
     onSwipeRelease: noop,
     onSwipeComplete: noop,
     swipeReleaseAnimationFn: Animated.timing,
-    swipeReleaseAnimationConfig: {
+    swipeReleaseSpringAnimationFn: Animated.spring,
+    swipeCancelReleaseAnimationConfig: {
       toValue: {x: 0, y: 0},
       duration: 300,
       easing: Easing.bezier(0.175, 0.885, 0.32, 1.275),
+      useNativeDriver: true,
+    },
+    swipeActivateReleaseAnimationConfig: {
       useNativeDriver: true,
     },
     rightColor: 'red',
@@ -116,13 +120,33 @@ class SwipingCell extends PureComponent {
       id,
       onSwipeRelease,
       swipeReleaseAnimationFn,
-      swipeReleaseAnimationConfig,
+      swipeReleaseSpringAnimationFn,
+      swipeCancelReleaseAnimationConfig,
+      swipeActivateReleaseAnimationConfig,
     } = this.props;
     const {
       pan,
+      isLeftActive,
+      isRightActive,
+      width,
+      cancelLeftSwiping,
+      cancelRightSwiping,
     } = this.state;
+    const velocity = gestureState.vx
 
-    swipeReleaseAnimationFn(pan, swipeReleaseAnimationConfig).start(() => {
+    if (isLeftActive && !cancelRightSwiping) {
+      return swipeReleaseSpringAnimationFn(pan, {toValue: {x: width, y: 0}, bounciness: 0, speed: 30, velocity, ...swipeActivateReleaseAnimationConfig}).start(() => {
+        onSwipeRelease(id, event);
+      });      
+    }
+
+    if (isRightActive && !cancelLeftSwiping) {
+      return swipeReleaseSpringAnimationFn(pan, {toValue: {x: -width, y: 0}, bounciness: 0, speed: 30, velocity, ...swipeActivateReleaseAnimationConfig}).start(() => {
+        onSwipeRelease(id, event);
+      });
+    }
+
+    return swipeReleaseAnimationFn(pan, swipeCancelReleaseAnimationConfig).start(() => {
       onSwipeRelease(id, event);
 
       this.setState({...this._resetState});
@@ -199,7 +223,7 @@ class SwipingCell extends PureComponent {
       translateX: pan.x.interpolate({
         inputRange: [-width, width],
         outputRange: [
-          -width + StyleSheet.hairlineWidth, width - StyleSheet.hairlineWidth
+          -width , width
         ],
         extrapolate: 'clamp'
       })

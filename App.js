@@ -34,6 +34,7 @@ export default class App extends PureComponent {
         id='cell1'
         onSwipeRelease={this.onSwipingDidRelease}
         points={points}
+        leftColor='purple'
       ></SwipingCell>
     );
   }
