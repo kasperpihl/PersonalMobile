@@ -34,6 +34,8 @@ class SwipingCell extends PureComponent {
       useNativeDriver: true,
     },
     swipeActivateReleaseAnimationConfig: {
+      bounciness: 0,
+      speed: 30,
       useNativeDriver: true,
     },
     rightColor: 'red',
@@ -58,6 +60,20 @@ class SwipingCell extends PureComponent {
     ...this._resetState,
   };
 
+  _reject = () => {
+    const {
+      swipeReleaseAnimationFn,
+      swipeCancelReleaseAnimationConfig,
+    } = this.props;
+    const {
+      pan,
+    } = this.state;
+
+    return swipeReleaseAnimationFn(pan, swipeCancelReleaseAnimationConfig).start(() => {
+      this.setState({...this._resetState});
+    });
+  }
+
   _handleLayout = ({nativeEvent: {layout: {width}}}) => this.setState({width, didLayout: true});
 
   _handlePan = Animated.event([null, {
@@ -81,7 +97,7 @@ class SwipingCell extends PureComponent {
     const {
       points,
     } = this.props;
-    const enoughVelocity = Math.abs(gestureState.vx) >= 0.1;
+    const enoughVelocity = Math.abs(gestureState.vx) >= 0.05;
     const swipingPercent = Math.abs(gestureState.dx / width * 100);
     const direction = gestureState.dx >= 0 ? 'right' : 'left';
     const orderedPoints = points.filter((point) => {
@@ -131,23 +147,29 @@ class SwipingCell extends PureComponent {
       width,
       cancelLeftSwiping,
       cancelRightSwiping,
+      currentPoint,
     } = this.state;
     const velocity = gestureState.vx
+    const customEventObject = {
+      currentPoint,
+      reject: this._reject,
+      origEvent: event,
+    }
 
     if (isLeftActive && !cancelRightSwiping) {
-      return swipeReleaseSpringAnimationFn(pan, {toValue: {x: width, y: 0}, bounciness: 0, speed: 30, velocity, ...swipeActivateReleaseAnimationConfig}).start(() => {
-        onSwipeRelease(id, event);
+      return swipeReleaseSpringAnimationFn(pan, {toValue: {x: width, y: 0}, velocity, ...swipeActivateReleaseAnimationConfig}).start(() => {
+        onSwipeRelease(id, customEventObject);
       });      
     }
 
     if (isRightActive && !cancelLeftSwiping) {
-      return swipeReleaseSpringAnimationFn(pan, {toValue: {x: -width, y: 0}, bounciness: 0, speed: 30, velocity, ...swipeActivateReleaseAnimationConfig}).start(() => {
-        onSwipeRelease(id, event);
+      return swipeReleaseSpringAnimationFn(pan, {toValue: {x: -width, y: 0}, velocity, ...swipeActivateReleaseAnimationConfig}).start(() => {
+        onSwipeRelease(id, customEventObject);
       });
     }
 
     return swipeReleaseAnimationFn(pan, swipeCancelReleaseAnimationConfig).start(() => {
-      onSwipeRelease(id, event);
+      onSwipeRelease(id, customEventObject);
 
       this.setState({...this._resetState});
     });

@@ -25,7 +25,7 @@ const points = [
 
 export default class App extends PureComponent {
   onSwipingDidRelease(cell, e) {
-    console.log('bla');
+    e.reject();
   }
 
   render() {
