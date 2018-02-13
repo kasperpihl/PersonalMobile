@@ -40,6 +40,7 @@ class SwipingCell extends PureComponent {
     },
     rightColor: 'red',
     leftColor: 'green',
+    rejectVelocity: 0.05,
   }
 
   _resetState = {
@@ -51,6 +52,8 @@ class SwipingCell extends PureComponent {
     prevDX: 0,
     cancelLeftSwiping: false,
     cancelRightSwiping: false,
+    active: false,
+    runningAnimation: false,
   }
 
   state = {
@@ -69,6 +72,7 @@ class SwipingCell extends PureComponent {
       pan,
     } = this.state;
 
+    this.setState({ runningAnimation: true });
     return swipeReleaseAnimationFn(pan, swipeCancelReleaseAnimationConfig).start(() => {
       this.setState({...this._resetState});
     });
@@ -93,23 +97,31 @@ class SwipingCell extends PureComponent {
       width,
       prevThreshold,
       prevDX,
+      pan,
+      isLeftActive,
+      isRightActive,
+      active,
+      runningAnimation,
     } = this.state;
     const {
       points,
+      rejectVelocity,
     } = this.props;
-    const enoughVelocity = Math.abs(gestureState.vx) >= 0.05;
+    const enoughVelocity = Math.abs(gestureState.vx) >= rejectVelocity;
     const swipingPercent = Math.abs(gestureState.dx / width * 100);
     const direction = gestureState.dx >= 0 ? 'right' : 'left';
+
     const orderedPoints = points.filter((point) => {
       return point.direction === direction;
     }).sort(orderPoints).reverse();
+
     const currentPoint = orderedPoints.find((point) => {
       return swipingPercent >= point.threshold;
     });
+
     const threshold = currentPoint ? currentPoint.threshold : 0;
     const cancelLeftSwiping = prevDX < gestureState.dx;
     const cancelRightSwiping = prevDX > gestureState.dx;
-
 
     if (prevThreshold !== threshold) {
       this.setState({
@@ -128,7 +140,14 @@ class SwipingCell extends PureComponent {
       })
     }
 
-    this._handlePan(event, gestureState);
+    if ((isLeftActive || isRightActive) && active) {
+      console.log('wtf brat');
+      return this._reject();
+    }
+
+    if (!runningAnimation) {
+      return this._handlePan(event, gestureState); 
+    }
   }
 
   _handlePanResponderEnd = (event, gestureState) => {
@@ -157,17 +176,28 @@ class SwipingCell extends PureComponent {
     }
 
     if (isLeftActive && !cancelRightSwiping) {
+      this.setState({ runningAnimation: true });
       return swipeReleaseSpringAnimationFn(pan, {toValue: {x: width, y: 0}, velocity, ...swipeActivateReleaseAnimationConfig}).start(() => {
         onSwipeRelease(id, customEventObject);
-      });      
-    }
-
-    if (isRightActive && !cancelLeftSwiping) {
-      return swipeReleaseSpringAnimationFn(pan, {toValue: {x: -width, y: 0}, velocity, ...swipeActivateReleaseAnimationConfig}).start(() => {
-        onSwipeRelease(id, customEventObject);
+        this.setState({
+          active: true,
+          runningAnimation: false,
+        });
       });
     }
 
+    if (isRightActive && !cancelLeftSwiping) {
+      this.setState({ runningAnimation: true });
+      return swipeReleaseSpringAnimationFn(pan, {toValue: {x: -width, y: 0}, velocity, ...swipeActivateReleaseAnimationConfig}).start(() => {
+        onSwipeRelease(id, customEventObject);
+        this.setState({
+          active: true,
+          runningAnimation: false,
+        });
+      });
+    }
+
+    this.setState({ runningAnimation: true });
     return swipeReleaseAnimationFn(pan, swipeCancelReleaseAnimationConfig).start(() => {
       onSwipeRelease(id, customEventObject);
 
