@@ -1,12 +1,18 @@
 import React, { PureComponent } from 'react';
 import SwipingCell from './src/react/components/swiping-cell/SwipingCell';
+import SvgUri from 'react-native-svg-uri';
 
+const leftIcon = <SvgUri
+width="50"
+height="50"
+source={{uri:'./assets/svgs/tick.svg'}}
+/>
 const points = [
   {
     direction: 'left',
     threshold: 20,
     color: 'purple',
-    // icon: 'Circle',
+    icon: leftIcon,
   },
   {
     direction: 'right',
@@ -35,6 +41,7 @@ export default class App extends PureComponent {
         onSwipeRelease={this.onSwipingDidRelease}
         points={points}
         leftColor='purple'
+        leftIcon={leftIcon}
       ></SwipingCell>
     );
   }

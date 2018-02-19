@@ -40,6 +40,7 @@ class SwipingCell extends PureComponent {
     },
     rightColor: 'red',
     leftColor: 'green',
+    leftIcon: null,
     rejectVelocity: 0.05,
   }
 
@@ -241,6 +242,7 @@ class SwipingCell extends PureComponent {
     } = this.state;
     const {
       leftColor,
+      leftIcon,
     } = this.props;
     let {
       isLeftActive
@@ -252,10 +254,11 @@ class SwipingCell extends PureComponent {
 
     const opacity = isLeftActive && cancelLeftSwiping ? 1 : inactiveOpacity;
     const backgroundColor = isLeftActive ? currentPoint.color || leftColor : leftColor;
+    const icon = isLeftActive ? currentPoint.leftIcon || leftIcon : leftIcon;
 
     return (
       <Animated.View style={[{transform, marginLeft: -width, width, backgroundColor, opacity}, styles.sideItem]}>
-        <Text>Left</Text>
+        {icon}
       </Animated.View>
     )
   }
