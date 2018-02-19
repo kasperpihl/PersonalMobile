@@ -10,7 +10,8 @@
     "moment": "^2.20.1",
     "react": "16.2.0",
     "react-native": "^0.53.0",
-    "react-native-svg": "^6.2.1"
+    "react-native-svg": "^6.2.1",
+    "react-native-svg-uri": "^1.2.3"
   },
   "devDependencies": {
     "babel-jest": "22.1.0",
