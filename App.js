@@ -1,11 +1,12 @@
 import React, { PureComponent } from 'react';
+import { View } from 'react-native';
 import SwipingCell from './src/react/components/swiping-cell/SwipingCell';
 import SvgUri from 'react-native-svg-uri';
 
 const leftIcon = <SvgUri
-width="50"
-height="50"
-source={{uri:'./assets/svgs/tick.svg'}}
+width="250"
+height="250"
+source={require('./assets/svgs/tick.svg')}
 />
 const points = [
   {
@@ -36,13 +37,16 @@ export default class App extends PureComponent {
 
   render() {
     return (
-      <SwipingCell
-        id='cell1'
-        onSwipeRelease={this.onSwipingDidRelease}
-        points={points}
-        leftColor='purple'
-        leftIcon={leftIcon}
-      ></SwipingCell>
+      <View>
+        {leftIcon}
+      </View>
+      // <SwipingCell
+      //   id='cell1'
+      //   onSwipeRelease={this.onSwipingDidRelease}
+      //   points={points}
+      //   leftColor='purple'
+      //   leftIcon={leftIcon}
+      // ></SwipingCell>
     );
   }
 }
