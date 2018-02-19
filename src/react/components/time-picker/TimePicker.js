@@ -1,5 +1,8 @@
-
 import React, { Component } from 'react';
+import { element } from 'react-swiss';
+
+import '../../../swiss/init';
+
 import {
   Text,
   PanResponder,
@@ -12,12 +15,19 @@ import distanceBetweenPoints from './distanceBetweenPoints';
 import angleBetweenPoints from './angleBetweenPoints';
 import pointFromAngleDistance from './pointFromAngleDistance';
 
+import sw from './time-picker.swiss';
+
 const kWheelRadius = 150;
 const kConfirmRadius = 80;
 const kDotSize = 60;
 
 const kEnableConfirmRadius = 60;
 const kClearRadius = 45;
+
+const Container = element(View, sw.container);
+const Circle = element(View, sw.circle);
+const ConfirmCircle = element(View, sw.confirmCircle);
+const Dot = element(View, sw.dot);
 
 export default class App extends Component<{}> {
   constructor(props) {
@@ -106,61 +116,23 @@ export default class App extends Component<{}> {
     
     const dotCenterDistance = kConfirmRadius + (kWheelRadius - kConfirmRadius)/ 2;
     
-    const { x, y } = pointFromAngleDistance(kWheelRadius, kWheelRadius, dotAngle, dotCenterDistance);
+    let { x, y } = pointFromAngleDistance(kWheelRadius, kWheelRadius, dotAngle, dotCenterDistance);
 
-    const dotStyles = {
-      top: y - 30,
-      left: x - 30,
-      opacity: isSwiping && !isOutOfScope ? 1 : 0,
-    };
+    x = x - kDotSize / 2;
+    y = y - kDotSize / 2;
 
-    const confirmStyles = {
-      backgroundColor: isInConfirmButton ? 'green' : 'white'
-    };
+    const active = !!(isSwiping && !isOutOfScope);
 
     return (
-      <View
-        style={styles.container}
+      <Container
         {...this._panResponder.panHandlers}
-        onLayout={this.onLayout}
-        
-      >
-        <View style={styles.circle} ref={(view) => { this.wheelComp = view; }}>
-          <View style={[confirmStyles, styles.confirmCircle]}></View>
-          <View style={[dotStyles, styles.dot]}></View>
-        </View>
-      </View>
+        onLayout={this.onLayout}>
+        <Circle innerRef={(view) => { this.wheelComp = view; }}>
+          <ConfirmCircle isInConfirmCircle={isInConfirmButton} />
+          <Dot top={y} left={x} active={active} />
+        </Circle>
+          
+      </Container>
     );
   }
 }
-
-const styles = {
-  container: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center'
-  },
-  dot: {
-    position: 'absolute',
-    width: kDotSize,
-    height: kDotSize,
-    borderRadius: kDotSize / 2,
-    backgroundColor: 'green',
-    
-  },
-  confirmCircle: {
-    width: kConfirmRadius * 2,
-    height: kConfirmRadius * 2,
-    borderRadius: kConfirmRadius,
-  },
-
-  circle: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: kWheelRadius * 2,
-    width: kWheelRadius * 2,
-    marginBottom: 50,
-    borderRadius: kWheelRadius,
-    backgroundColor: 'red'
-  }
-};
