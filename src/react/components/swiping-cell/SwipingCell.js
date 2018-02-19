@@ -307,7 +307,7 @@ class SwipingCell extends PureComponent {
         {this._renderLeftSide(transform, width)}
 
         <Animated.View style={[{transform, width}, styles.listItem]}>
-          <Text>Swipe me ->>>>>></Text>
+          {this.props.children()}
         </Animated.View>
 
         {this._renderRightSide(transform, width)}

@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 import SwipingCell from './src/react/components/swiping-cell/SwipingCell';
 import SvgUri from 'react-native-svg-uri';
 
@@ -37,16 +37,19 @@ export default class App extends PureComponent {
 
   render() {
     return (
-      <View>
-        {leftIcon}
-      </View>
-      // <SwipingCell
-      //   id='cell1'
-      //   onSwipeRelease={this.onSwipingDidRelease}
-      //   points={points}
-      //   leftColor='purple'
-      //   leftIcon={leftIcon}
-      // ></SwipingCell>
+      <SwipingCell
+        id='cell1'
+        onSwipeRelease={this.onSwipingDidRelease}
+        points={points}
+        leftColor='purple'
+        leftIcon={leftIcon}
+      >
+        {(cell) => (
+          <View>
+            <Text>Hi</Text>
+          </View>
+        )}
+      </SwipingCell>
     );
   }
 }
