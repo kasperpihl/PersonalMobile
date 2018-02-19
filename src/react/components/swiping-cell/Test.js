@@ -3,16 +3,13 @@ import PropTypes from 'prop-types';
 
 class Container extends PureComponent {
   onSwipingDidRelease(cell, e) {
-    if(cell.direction === 'right' && cell.threshold === 40) {
 
-    }
   }
   onSwipingWillRelease(cell, state, e) {
     /*
       id: 'cell1',
       refreshContent: () => {}
     */
-    cell.refreshContent();
   }
   renderContent(cell) {
     return (
