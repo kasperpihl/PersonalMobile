@@ -5,8 +5,14 @@ const kDotSize = 60;
 export default {
   container: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     alignItems: 'center'
+  },
+  timeContainer: {
+    marginTop: 50,
+  },
+  timeLabel: {
+    fontSize: 50,
   },
   dot: {
     position: 'absolute',

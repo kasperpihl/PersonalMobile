@@ -1,7 +1,12 @@
 import React, { PureComponent } from 'react';
+
 import { View, Text } from 'react-native';
+import './src/swiss/init';
+
 import SwipingCell from './src/react/components/swiping-cell/SwipingCell';
 import SvgUri from 'react-native-svg-uri';
+import TimePicker from './src/react/components/time-picker/TimePicker';
+
 
 const leftIcon = <SvgUri
 width="250"
@@ -38,18 +43,19 @@ export default class App extends PureComponent {
   render() {
     return (
       <SwipingCell
-        id='cell1'
-        onSwipeRelease={this.onSwipingDidRelease}
-        points={points}
-        leftColor='purple'
-        leftIcon={leftIcon}
+       id='cell1'
+       onSwipeRelease={this.onSwipingDidRelease}
+       points={points}
+       leftColor='purple'
+       leftIcon={leftIcon}
       >
-        {(cell) => (
-          <View>
-            <Text>Hi</Text>
-          </View>
-        )}
+       {(cell) => (
+         <View>
+           <Text>Hi</Text>
+         </View>
+       )}
       </SwipingCell>
+      //<TimePicker initialDate={new Date()}/>
     );
   }
 }

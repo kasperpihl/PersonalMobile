@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { element } from 'react-swiss';
 
-import '../../../swiss/init';
-
 import {
   Text,
   PanResponder,
@@ -10,6 +8,7 @@ import {
 } from 'react-native';
 
 import moment from 'moment'
+import 'moment-round';
 
 import distanceBetweenPoints from './distanceBetweenPoints';
 import angleBetweenPoints from './angleBetweenPoints';
@@ -25,6 +24,8 @@ const kEnableConfirmRadius = 60;
 const kClearRadius = 45;
 
 const Container = element(View, sw.container);
+const TimeContainer = element(View, sw.timeContainer);
+const TimeLabel = element(Text, sw.timeLabel);
 const Circle = element(View, sw.circle);
 const ConfirmCircle = element(View, sw.confirmCircle);
 const Dot = element(View, sw.dot);
@@ -52,7 +53,31 @@ export default class App extends Component<{}> {
           if(typeof this._lastX !== 'undefined') {
             const angle = angleBetweenPoints(centerX, centerY, this._lastX, this._lastY, x, y);
             this._dAngle = this._dAngle + angle;
-            const angleInterval = 50 * Math.PI / 180;
+            let angleInterval = 50;
+            let minutesPerInterval = 5;
+            const absVel = Math.abs(gestureState.vx) + Math.abs(gestureState.vy);
+            if(absVel > 0.8) {
+              angleInterval = 40;
+              minutesPerInterval = 30;
+            }
+            angleInterval = angleInterval * Math.PI / 180;
+            const numberOfIntervals = -1 * Math.round(this._dAngle/angleInterval);
+            console.log(absVel);
+            if(numberOfIntervals != 0) {
+              this._dAngle = 0;
+              const minTime = moment(this.state.minDate);
+              const maxTime = moment(this.state.maxDate);
+              let absIntervals = Math.abs(numberOfIntervals);
+              let newDate = moment(this.state.currentDate)
+                              .add(numberOfIntervals * minutesPerInterval, 'minutes');
+              if(newDate.isBefore(minTime)) {
+                newDate = minTime;
+              } else if(newDate.isAfter(maxTime)) {
+                newDate = maxTime;
+              }
+              console.log(newDate.format());
+              this.setState({ currentDate: newDate.format() });
+            }
           }
           this._lastX = x;
           this._lastY = y;
@@ -68,6 +93,15 @@ export default class App extends Component<{}> {
         this.setState({ isSwiping: false });
       },
     });
+  }
+  componentWillMount() {
+    const { initialDate } = this.props;
+    this.setState({
+      minDate: moment(initialDate).startOf('day').format(),
+      maxDate: moment(initialDate).endOf('day').floor(5, 'minutes').format(),
+      currentDate: moment(initialDate).round(5, 'minutes').format(),
+    })
+    console.log(moment(initialDate).endOf('day').floor(5, 'minutes').format(), moment(initialDate).round(5, 'minutes').format());
   }
   updateState(x, y) {
     const {
@@ -112,6 +146,7 @@ export default class App extends Component<{}> {
       isInConfirmButton,
       isOutOfScope,
       isSwiping,
+      currentDate,
     } = this.state;
     
     const dotCenterDistance = kConfirmRadius + (kWheelRadius - kConfirmRadius)/ 2;
@@ -127,6 +162,9 @@ export default class App extends Component<{}> {
       <Container
         {...this._panResponder.panHandlers}
         onLayout={this.onLayout}>
+        <TimeContainer>
+          <TimeLabel>{moment(currentDate).format('H:mm')}</TimeLabel>
+        </TimeContainer>
         <Circle innerRef={(view) => { this.wheelComp = view; }}>
           <ConfirmCircle isInConfirmCircle={isInConfirmButton} />
           <Dot top={y} left={x} active={active} />
