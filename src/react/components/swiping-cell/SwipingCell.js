@@ -11,7 +11,12 @@ import {
 
 const noop = () => {}
 
-const orderPoints = (a,b) => {
+const orderPoints = (points, direction) => {
+  return points.filter((point) => {
+    return point.direction === direction;
+  }).sort(comparePoints).reverse();
+}
+const comparePoints = (a,b) => {
   if (a.threshold < b.threshold)
     return -1;
   if (a.threshold > b.threshold)
@@ -20,6 +25,17 @@ const orderPoints = (a,b) => {
 }
 
 class SwipingCell extends PureComponent {
+  constructor(props) {
+    super(props);
+
+    const { points } = props;
+
+    this._orderedPoints = {
+      left: orderPoints(points, 'left'),
+      right: orderPoints(points, 'right'),
+    }
+  }
+
   static defaultProps = {
     onSwipeStart: noop,
     onSwipeMove: noop,
@@ -124,7 +140,6 @@ class SwipingCell extends PureComponent {
       active,
     } = this.state;
     const {
-      points,
       rejectVelocity,
     } = this.props;
 
@@ -136,11 +151,7 @@ class SwipingCell extends PureComponent {
     const swipingPercent = Math.abs(gestureState.dx / width * 100);
     const direction = gestureState.dx >= 0 ? 'right' : 'left';
 
-    const orderedPoints = points.filter((point) => {
-      return point.direction === direction;
-    }).sort(orderPoints).reverse();
-
-    const currentPoint = orderedPoints.find((point) => {
+    const currentPoint = this._orderedPoints[direction].find((point) => {
       return swipingPercent >= point.threshold;
     });
 
