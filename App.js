@@ -52,7 +52,6 @@ export default class App extends PureComponent {
       >
        {(currentPoint) => (
          <View style={[{height: 75, backgroundColor: 'red'}]}>
-           {console.log('chushki ' + currentPoint)}
            <Text>Hi</Text>
          </View>
        )}
