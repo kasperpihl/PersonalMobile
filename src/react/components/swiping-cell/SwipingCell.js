@@ -58,6 +58,7 @@ class SwipingCell extends PureComponent {
     leftColor: 'green',
     leftIcon: null,
     rejectVelocity: 0.05,
+    height: 20,
   }
 
   _resetState = {
@@ -110,7 +111,7 @@ class SwipingCell extends PureComponent {
 }, true)
   }
 
-  _handleLayout = ({nativeEvent: {layout: {width}}}) => this.setState({width, didLayout: true});
+  _handleLayout = ({nativeEvent: {layout: {width}}}) => this.setState({ width, didLayout: true });
 
   _handlePan = Animated.event([null, {
     dx: this.state.pan.x
@@ -244,16 +245,18 @@ class SwipingCell extends PureComponent {
     onPanResponderTerminationRequest: this._handlePanResponderEnd
   });
 
-  _renderLeftSide = (transform, width) => {
+  _renderLeftSide = (transform) => {
     const {
       didLayout,
       currentPoint,
       inactiveOpacity,
       cancelLeftSwiping,
+      width,
     } = this.state;
     const {
       leftColor,
       leftIcon,
+      height,
     } = this.props;
     let {
       isLeftActive
@@ -268,22 +271,24 @@ class SwipingCell extends PureComponent {
     const icon = isLeftActive ? currentPoint.leftIcon || leftIcon : leftIcon;
 
     return (
-      <Animated.View style={[{transform, marginLeft: -width, width, backgroundColor, opacity}, styles.sideItem]}>
+      <Animated.View style={[{transform, marginLeft: -width, width, height, backgroundColor, opacity}, styles.sideItem]}>
         {icon}
       </Animated.View>
     )
   }
 
-  _renderRightSide = (transform, width) => {
+  _renderRightSide = (transform) => {
     const {
       didLayout,
       isRightActive,
       currentPoint,
       inactiveOpacity,
       cancelRightSwiping,
+      width,
     } = this.state;
     const {
       rightColor,
+      height,
     } = this.props;
 
     if (!didLayout) {
@@ -294,7 +299,7 @@ class SwipingCell extends PureComponent {
     const backgroundColor = isRightActive ? currentPoint.color || rightColor : rightColor;
 
     return (
-      <Animated.View style={[{transform, marginRight: -width, width, backgroundColor, opacity}, styles.sideItem]}>
+      <Animated.View style={[{transform, marginRight: -width, width, height, backgroundColor, opacity}, styles.sideItem]}>
         <Text>Right</Text>
       </Animated.View>
     )
@@ -302,6 +307,7 @@ class SwipingCell extends PureComponent {
 
   render() {
     const {pan, width, currentPoint} = this.state;
+    const {height} = this.props;
     const transform = [{
       translateX: pan.x.interpolate({
         inputRange: [-width, width],
@@ -315,13 +321,13 @@ class SwipingCell extends PureComponent {
     return (
       <View onLayout={this._handleLayout} style={[styles.container]} {...this._panResponder.panHandlers}>
 
-        {this._renderLeftSide(transform, width)}
+        {this._renderLeftSide(transform)}
 
-        <Animated.View style={[{transform, width}, styles.listItem]}>
+        <Animated.View style={[{transform, width, height}, styles.listItem]}>
           {this.props.children(currentPoint)}
         </Animated.View>
 
-        {this._renderRightSide(transform, width)}
+        {this._renderRightSide(transform)}
       </View>
     );
   }
@@ -335,12 +341,9 @@ const styles = StyleSheet.create({
   },
   listItem: {
     flex: 1,
-    backgroundColor: 'yellow',
-    height: 75,
   },
   sideItem: {
     flex: 1,
-    height: 75,
   },
 });
 

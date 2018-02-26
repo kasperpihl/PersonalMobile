@@ -46,11 +46,12 @@ export default class App extends PureComponent {
        id='cell1'
        onSwipeRelease={this.onSwipingDidRelease}
        points={points}
+       height={75}
        leftColor='purple'
        leftIcon={leftIcon}
       >
        {(currentPoint) => (
-         <View>
+         <View style={[{height: 75, backgroundColor: 'red'}]}>
            {console.log('chushki ' + currentPoint)}
            <Text>Hi</Text>
          </View>
