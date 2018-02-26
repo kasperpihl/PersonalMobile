@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 
 import { View, Text } from 'react-native';
-import './src/swiss/init';
+// import './src/swiss/init';
 
 import SwipingCell from './src/react/components/swiping-cell/SwipingCell';
 import SvgUri from 'react-native-svg-uri';
@@ -49,8 +49,9 @@ export default class App extends PureComponent {
        leftColor='purple'
        leftIcon={leftIcon}
       >
-       {(cell) => (
+       {(currentPoint) => (
          <View>
+           {console.log('chushki ' + currentPoint)}
            <Text>Hi</Text>
          </View>
        )}

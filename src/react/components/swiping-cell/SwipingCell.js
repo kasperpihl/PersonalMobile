@@ -290,7 +290,7 @@ class SwipingCell extends PureComponent {
   }
 
   render() {
-    const {pan, width} = this.state;
+    const {pan, width, currentPoint} = this.state;
     const transform = [{
       translateX: pan.x.interpolate({
         inputRange: [-width, width],
@@ -307,7 +307,7 @@ class SwipingCell extends PureComponent {
         {this._renderLeftSide(transform, width)}
 
         <Animated.View style={[{transform, width}, styles.listItem]}>
-          {this.props.children()}
+          {this.props.children(currentPoint)}
         </Animated.View>
 
         {this._renderRightSide(transform, width)}
