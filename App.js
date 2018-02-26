@@ -21,17 +21,20 @@ const points = [
     icon: leftIcon,
   },
   {
+    direction: 'left',
+    threshold: 30,
+    color: 'yellow',
+  },
+  {
     direction: 'right',
     threshold: 20,
-    // color: 'purple',
-    // icon: 'Circle',
+    color: 'blue',
   },
   {
     id: 'complete',
     direction: 'right',
     threshold: 80,
     color: 'blue',
-    // icon: 'Circle',
   }
 ];
 
@@ -47,8 +50,6 @@ export default class App extends PureComponent {
        onSwipeRelease={this.onSwipingDidRelease}
        points={points}
        height={75}
-       leftColor='purple'
-       leftIcon={leftIcon}
       >
        {(currentPoint) => (
          <View style={[{height: 75, backgroundColor: 'red'}]}>

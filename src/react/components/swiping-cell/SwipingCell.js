@@ -34,6 +34,11 @@ class SwipingCell extends PureComponent {
       left: orderPoints(points, 'left'),
       right: orderPoints(points, 'right'),
     }
+
+    this._defaultLeftColor = this._orderedPoints.right.reverse()[0].color || 'white';
+    this._defaultLeftIcon = this._orderedPoints.right.reverse()[0].icon || null;
+    this._defaultRightColor = this._orderedPoints.left.reverse()[0].color || 'white';
+    this._defaultRightIcon = this._orderedPoints.left.reverse()[0].icon || null;;
   }
 
   static defaultProps = {
@@ -54,9 +59,6 @@ class SwipingCell extends PureComponent {
       speed: 30,
       useNativeDriver: true,
     },
-    rightColor: 'red',
-    leftColor: 'green',
-    leftIcon: null,
     rejectVelocity: 0.05,
     height: 20,
   }
@@ -254,8 +256,6 @@ class SwipingCell extends PureComponent {
       width,
     } = this.state;
     const {
-      leftColor,
-      leftIcon,
       height,
     } = this.props;
     let {
@@ -266,9 +266,11 @@ class SwipingCell extends PureComponent {
       return null;
     }
 
+    const leftColor = this._defaultLeftColor;
+    const leftIcon = this._defaultLeftIcon;
     const opacity = isLeftActive && cancelLeftSwiping ? 1 : inactiveOpacity;
     const backgroundColor = isLeftActive ? currentPoint.color || leftColor : leftColor;
-    const icon = isLeftActive ? currentPoint.leftIcon || leftIcon : leftIcon;
+    const icon = isLeftActive ? currentPoint.icon || leftIcon : leftIcon;
 
     return (
       <Animated.View style={[{transform, marginLeft: -width, width, height, backgroundColor, opacity}, styles.sideItem]}>
@@ -287,7 +289,6 @@ class SwipingCell extends PureComponent {
       width,
     } = this.state;
     const {
-      rightColor,
       height,
     } = this.props;
 
@@ -295,12 +296,15 @@ class SwipingCell extends PureComponent {
       return null;
     }
 
+    const rightColor = this._defaultRightColor;
+    const rightIcon = this._defaultRightIcon;
     const opacity = isRightActive && cancelRightSwiping ? 1 : inactiveOpacity;
     const backgroundColor = isRightActive ? currentPoint.color || rightColor : rightColor;
+    const icon = isRightActive ? currentPoint.icon || rightIcon : rightIcon;
 
     return (
       <Animated.View style={[{transform, marginRight: -width, width, height, backgroundColor, opacity}, styles.sideItem]}>
-        <Text>Right</Text>
+        {icon}
       </Animated.View>
     )
   }
