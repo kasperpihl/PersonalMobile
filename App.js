@@ -1,9 +1,13 @@
 // import React, { PureComponent } from 'react';
 import { Platform } from 'react-native';
 import { Navigation } from 'react-native-navigation';
+import { Provider } from 'react-redux';
 import { registerScreens } from './src/screens';
+import configureStore from './src/store/configureStore';
 
-registerScreens();
+const store = configureStore();
+
+registerScreens(store, Provider);
 
 const tabs = [{
   label: 'TabOne',
