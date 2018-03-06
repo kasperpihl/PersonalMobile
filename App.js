@@ -1,63 +1,40 @@
-import React, { PureComponent } from 'react';
+// import React, { PureComponent } from 'react';
+import { Platform } from 'react-native';
+import { Navigation } from 'react-native-navigation';
+import { registerScreens } from './src/screens';
 
-import { View, Text } from 'react-native';
-// import './src/swiss/init';
+registerScreens();
 
-import SwipingCell from './src/react/components/swiping-cell/SwipingCell';
-import SvgUri from 'react-native-svg-uri';
-import TimePicker from './src/react/components/time-picker/TimePicker';
+const tabs = [{
+  label: 'TabOne',
+  screen: 'example.TabOne',
+  // icon: require('../img/list.png'),
+  title: 'TabOne',
+}, {
+  label: 'TabTwo',
+  screen: 'example.TabTwo',
+  // icon: require('../img/swap.png'),
+  title: 'TabTwo',
+}];
 
-
-const leftIcon = <SvgUri
-width="250"
-height="250"
-source={require('./assets/svgs/tick.svg')}
-/>
-const points = [
-  {
-    direction: 'left',
-    threshold: 20,
-    color: 'purple',
-    icon: leftIcon,
+Navigation.startTabBasedApp({
+  tabs,
+  animationType: 'fade',
+  tabsStyle: {
+    tabBarBackgroundColor: '#003a66',
+    tabBarButtonColor: '#ffffff',
+    tabBarSelectedButtonColor: '#ff505c',
+    tabFontFamily: 'BioRhyme-Bold',
   },
-  {
-    direction: 'left',
-    threshold: 30,
-    color: 'yellow',
+  appStyle: {
+    tabBarBackgroundColor: '#003a66',
+    navBarButtonColor: '#ffffff',
+    tabBarButtonColor: '#ffffff',
+    navBarTextColor: '#ffffff',
+    tabBarSelectedButtonColor: '#ff505c',
+    navigationBarColor: '#003a66',
+    navBarBackgroundColor: '#003a66',
+    statusBarColor: '#002b4c',
+    tabFontFamily: 'BioRhyme-Bold',
   },
-  {
-    direction: 'right',
-    threshold: 20,
-    color: 'blue',
-  },
-  {
-    id: 'complete',
-    direction: 'right',
-    threshold: 80,
-    color: 'blue',
-  }
-];
-
-export default class App extends PureComponent {
-  onSwipingDidRelease(cell, e) {
-    console.log('swipe ended');
-  }
-
-  render() {
-    return (
-      <SwipingCell
-       id='cell1'
-       onSwipeRelease={this.onSwipingDidRelease}
-       points={points}
-       height={75}
-      >
-       {(currentPoint) => (
-         <View style={[{height: 75, backgroundColor: 'red'}]}>
-           <Text>Hi</Text>
-         </View>
-       )}
-      </SwipingCell>
-      //<TimePicker initialDate={new Date()}/>
-    );
-  }
-}
+});
