@@ -40,6 +40,7 @@ Navigation.startTabBasedApp({
       passProps: {} // simple serializable object that will pass as props to all top screens (optional),
     },
   },
+<<<<<<< HEAD
   // animationType: 'slide',
   tabsStyle: {
     tabBarBackgroundColor: '#003a66',
@@ -59,3 +60,45 @@ Navigation.startTabBasedApp({
     tabFontFamily: 'BioRhyme-Bold',
   },
 });
+=======
+  {
+    direction: 'right',
+    threshold: 20,
+    // color: 'purple',
+    // icon: 'Circle',
+  },
+  {
+    id: 'complete',
+    direction: 'right',
+    threshold: 80,
+    color: 'blue',
+    // icon: 'Circle',
+  }
+];
+
+export default class App extends PureComponent {
+  onSwipingDidRelease(cell, e) {
+    console.log('swipe ended');
+  }
+
+  render() {
+    return (
+      <SwipingCell
+       id='cell1'
+       onSwipeRelease={this.onSwipingDidRelease}
+       points={points}
+       height={75}
+       leftColor='purple'
+       leftIcon={leftIcon}
+      >
+       {(currentPoint) => (
+         <View style={[{height: 75, backgroundColor: 'red'}]}>
+           <Text>Hi</Text>
+         </View>
+       )}
+      </SwipingCell>
+      //<TimePicker initialDate={new Date()}/>
+    );
+  }
+}
+>>>>>>> parent of a10f0d3... getting default color and icon from the first point
