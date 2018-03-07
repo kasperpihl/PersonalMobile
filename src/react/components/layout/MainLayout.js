@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { connect } from 'react-redux';
 import {
   View,
   Text,
@@ -40,4 +41,11 @@ const styles = StyleSheet.create({
   }
 });
 
-export default MainLayout;
+const mapStateToProps = (state) => (state);
+
+const mapDispatchToProps = (dispatch) => ({});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(MainLayout);
