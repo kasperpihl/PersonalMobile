@@ -1,8 +1,8 @@
 import { Navigation } from 'react-native-navigation';
-import TabOne from './tab-one';
-import TabTwo from './tab-two';
+import Account from './account';
+import TodoList from './todo-list';
 
 export const registerScreens = (store, Provider) => {
-  Navigation.registerComponent('example.TabOne', () => TabOne, store, Provider);
-  Navigation.registerComponent('example.TabTwo', () => TabTwo, store, Provider);
+  Navigation.registerComponent('swipes.Account', () => Account, store, Provider);
+  Navigation.registerComponent('swipes.TodoList', () => TodoList, store, Provider);
 }

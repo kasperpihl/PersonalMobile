@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text} from 'react-native';
 import { connect } from 'react-redux';
 
-class TabOne extends React.Component {
+class TodoList extends React.Component {
 	constructor(props) {
 		super(props);
 
@@ -12,7 +12,7 @@ class TabOne extends React.Component {
   render() {
     return (
       <View>
-        <Text>Tab One</Text>
+        <Text>Todo List</Text>
       </View>
     );
   }
@@ -26,5 +26,4 @@ function mapDispatchToProps(dispatch) {
 	return {};
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(TabOne);
-// export default TabOne;
+export default connect(mapStateToProps, mapDispatchToProps)(TodoList);

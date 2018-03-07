@@ -10,20 +10,37 @@ const store = configureStore();
 registerScreens(store, Provider);
 
 const tabs = [{
-  label: 'TabOne',
-  screen: 'example.TabOne',
+  label: 'Account',
+  screen: 'swipes.Account',
   // icon: require('../img/list.png'),
-  title: 'TabOne',
+  title: 'Account',
+  animationType: 'slide',
 }, {
-  label: 'TabTwo',
-  screen: 'example.TabTwo',
+  label: 'Snoosed',
+  screen: 'swipes.TodoList',
   // icon: require('../img/swap.png'),
-  title: 'TabTwo',
+  title: 'Snoosed',
+}, {
+  label: 'Now',
+  screen: 'swipes.TodoList',
+  // icon: require('../img/swap.png'),
+  title: 'Now',
+}, {
+  label: 'Done',
+  screen: 'swipes.TodoList',
+  // icon: require('../img/swap.png'),
+  title: 'Done',
 }];
 
 Navigation.startTabBasedApp({
   tabs,
-  animationType: 'fade',
+  drawer: { // optional, add this if you want a side menu drawer in your app
+    left: { // optional, define if you want a drawer from the left
+      screen: 'swipes.Account', // unique ID registered with Navigation.registerScreen
+      passProps: {} // simple serializable object that will pass as props to all top screens (optional),
+    },
+  },
+  // animationType: 'slide',
   tabsStyle: {
     tabBarBackgroundColor: '#003a66',
     tabBarButtonColor: '#ffffff',
