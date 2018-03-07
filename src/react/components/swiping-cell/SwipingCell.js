@@ -347,4 +347,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SwipingCell
+export default SwipingCell;
